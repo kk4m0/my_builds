@@ -11,5 +11,15 @@ Each iteration ends with a demonstrable, tested build that PetPause staff can re
 
 *(Word count of overview body: ~300)*
 
-**Reference**
-Larman, C. & Basili, V. R. (2003) 'Iterative and Incremental Development: A Brief History', *IEEE Computer*, 36(6), pp. 47–56. Available at: https://www.craiglarman.com/wiki/downloads/misc/history-of-iterative-larman-and-basili-ieee-computer.pdf
+## References
+
+**Primary source cited in the overview**
+
+- Larman, C. & Basili, V. R. (2003) 'Iterative and Incremental Development: A Brief History', *IEEE Computer*, 36(6), pp. 47–56. Available at: https://doi.org/10.1109/MC.2003.1204375
+
+**Additional credible sources**
+
+- Beck, K. et al. (2001) *Manifesto for Agile Software Development*. Available at: https://agilemanifesto.org/ [Accessed 3 September 2026]. Primary statement of the values and principles behind agile methods such as IID.
+- Agile Alliance (n.d.) *Incremental Development* and *Iterative Development*, Agile Glossary. Available at: https://agilealliance.org/glossary/incremental-development/ [Accessed 3 September 2026]. A well-regarded agile professional body defining how increments are vertical and usable.
+- Schwaber, K. & Sutherland, J. (2020) *The Scrum Guide*. Available at: https://scrumguides.org/scrum-guide.html [Accessed 3 September 2026]. States that Scrum "employs an iterative, incremental approach to optimize predictability and to control risk."
+- Boehm, B. W. (1988) 'A Spiral Model of Software Development and Enhancement', *IEEE Computer*, 21(5), pp. 61–72. Available at: https://doi.org/10.1109/2.59. A seminal risk-driven model that influenced iterative, incremental practice before the agile movement.
