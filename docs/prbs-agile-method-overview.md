@@ -15,12 +15,12 @@ Each iteration ends with a demonstrable, tested build that PetPause staff can re
 
 **Primary source cited in the overview**
 
-- Larman, C. and Basili, V.R. (2003) 'Iterative and incremental development: a brief history', *Computer*, 36(6), pp. 47–56. Available at: https://doi.org/10.1109/MC.2003.1204375 (Accessed: 08 September 2026).
+- Larman, C. and Basili, V.R. (2003) 'Iterative and incremental development: a brief history', *Computer*, 36(6), pp. 47–56. Available at: https://www.craiglarman.com/wiki/downloads/misc/history-of-iterative-larman-and-basili-ieee-computer.pdf (Accessed: 08 September 2026).
 
 **Additional credible sources**
 
 - Agile Alliance (no date a) *Incremental development*. Available at: https://agilealliance.org/glossary/incremental-development/ (Accessed: 08 September 2026).
 - Agile Alliance (no date b) *Iterative development*. Available at: https://agilealliance.org/glossary/iterative-development/ (Accessed: 08 September 2026).
 - Beck, K., Beedle, M., van Bennekum, A., Cockburn, A., Cunningham, W., Fowler, M., Grenning, J., Highsmith, J., Hunt, A., Jeffries, R., Kern, J., Marick, B., Martin, R.C., Mellor, S., Schwaber, K., Sutherland, J. and Thomas, D. (2001) *Manifesto for agile software development*. Available at: https://agilemanifesto.org/ (Accessed: 08 September 2026).
-- Boehm, B.W. (1988) 'A spiral model of software development and enhancement', *Computer*, 21(5), pp. 61–72. Available at: https://doi.org/10.1109/2.59 (Accessed: 08 September 2026).
+- Boehm, B.W. (1988) 'A spiral model of software development and enhancement', *Computer*, 21(5), pp. 61–72. Available at: https://static.aminer.org/pdf/PDF/000/447/332/a_spiral_model_of_software_development_and_enhancement.pdf (Accessed: 08 September 2026).
 - Schwaber, K. and Sutherland, J. (2020) *The Scrum Guide*. Available at: https://scrumguides.org/scrum-guide.html (Accessed: 08 September 2026).
