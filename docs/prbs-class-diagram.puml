@@ -1,0 +1,167 @@
+@startuml PRBS-Class-Diagram
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+
+package "Domain entities" {
+  class StaffAccount <<entity>> {
+    +UUID staffId
+    +String username
+    -String passwordHash
+    +StaffRole role
+    +AccountStatus status
+    +DateTime lastLoginAt
+    +authenticate(password) Boolean
+  }
+
+  enum StaffRole {
+    ADMIN
+    RECEPTION
+    MANAGER
+  }
+
+  enum AccountStatus {
+    ACTIVE
+    LOCKED
+    DISABLED
+  }
+
+  class Owner <<entity>> {
+    +UUID ownerId
+    +String fullName
+    +String phone
+    +String email
+    +String address
+    +updateContactDetails()
+  }
+
+  class Pet <<entity>> {
+    +UUID petId
+    +String name
+    +String breed
+    +Integer ageYears
+    +hasActiveMedicalAlert() Boolean
+  }
+
+  class MedicalAlert <<entity>> {
+    +UUID alertId
+    +String medicalConditions
+    +String allergies
+    +String dietaryRestrictions
+    +AlertSeverity severity
+    +Boolean active
+    +DateTime updatedAt
+    +isActive() Boolean
+  }
+
+  enum AlertSeverity {
+    LOW
+    MEDIUM
+    HIGH
+    CRITICAL
+  }
+
+  class EmergencyVetContact <<entity>> {
+    +UUID contactId
+    +String contactName
+    +String practiceName
+    +String phone
+    +String address
+  }
+
+  class Booking <<entity>> {
+    +UUID bookingId
+    +Date startDate
+    +Date endDate
+    +BookingStatus status
+    +DateTime createdAt
+    +DateTime updatedAt
+    +validateDates() Boolean
+    +cancel()
+  }
+
+  class OwnerContactSnapshot <<value object>> {
+    +String fullName
+    +String phone
+    +String email
+  }
+
+  enum BookingStatus {
+    CONFIRMED
+    CANCELLED
+  }
+
+  class DaycareFacility <<entity>> {
+    +UUID facilityId
+    +String name
+    +Integer maximumCapacity
+    +currentOccupancy(startDate, endDate) Integer
+  }
+}
+
+package "Application services" {
+  class AuthenticationService <<service>> {
+    +login(username, password) StaffAccount
+    +logout(staffId)
+  }
+
+  class PetProfileService <<service>> {
+    +createPet(profileData) Pet
+    +getPet(petId) Pet
+    +updatePet(petId, profileData) Pet
+    +deletePet(petId)
+    +recordAlert(petId, alertData) MedicalAlert
+    +captureEmergencyVet(petId, contactData) EmergencyVetContact
+  }
+
+  class BookingService <<service>> {
+    +createBooking(bookingData) Booking
+    +getBooking(bookingId) Booking
+    +updateBooking(bookingId, bookingData) Booking
+    +cancelBooking(bookingId)
+    +validatePetLink(petId) Boolean
+    +checkCapacity(bookingData) Boolean
+  }
+
+  class CapacityService <<service>> {
+    +hasAvailability(startDate, endDate) Boolean
+    +currentOccupancy(startDate, endDate) Integer
+  }
+
+  class Dashboard <<boundary>> {
+    +displayMedicalAlertFlags() List<MedicalAlert>
+  }
+}
+
+StaffAccount --> StaffRole : has
+StaffAccount --> AccountStatus : has
+
+Owner "1" --> "0..*" Pet : owns
+Pet "1" *-- "0..*" MedicalAlert : records
+Pet "1" *-- "0..1" EmergencyVetContact : has
+
+Booking "0..*" --> "1" Pet : for
+Booking "0..*" --> "1" Owner : contact owner
+Booking "1" *-- "1" OwnerContactSnapshot : stores
+Booking "0..*" --> "1" DaycareFacility : booked at
+Booking --> BookingStatus : has
+MedicalAlert --> AlertSeverity : has
+
+AuthenticationService ..> StaffAccount : authenticates
+PetProfileService ..> Pet : maintains
+PetProfileService ..> MedicalAlert : records and updates
+PetProfileService ..> EmergencyVetContact : captures
+BookingService ..> Booking : manages
+BookingService ..> Pet : requires existing pet
+BookingService ..> Owner : reads contact details
+BookingService ..> CapacityService : requests check
+CapacityService ..> DaycareFacility : reads maximum capacity
+CapacityService ..> Booking : counts active bookings
+Dashboard ..> Pet : reads profiles
+Dashboard ..> MedicalAlert : displays active flags
+
+note "Every booking references exactly one existing Pet.\nA booking is saved only after the pet-link and capacity checks pass." as BookingRule
+BookingRule .. Booking
+
+@enduml

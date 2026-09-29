@@ -1,0 +1,64 @@
+@startuml PRBS-Use-Case
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #E7F2FB
+  BorderColor #2B6F9F
+  ArrowColor #486581
+}
+
+actor "Authorised staff member" as Staff
+
+rectangle "Pet Records & Booking System (PRBS)" {
+  usecase "Log in" as UC_Login
+  usecase "Validate username\nand password" as UC_Credentials
+
+  usecase "Create pet profile" as UC_CreatePet
+  usecase "View pet profile" as UC_ViewPet
+  usecase "Update pet profile" as UC_UpdatePet
+  usecase "Delete pet profile" as UC_DeletePet
+  usecase "Record or update medical\nand dietary alerts" as UC_Alerts
+  usecase "Capture emergency\nveterinary information" as UC_EmergencyVet
+
+  usecase "View dashboard" as UC_Dashboard
+  usecase "Display medical\nalert flag" as UC_AlertFlag
+
+  usecase "Create daycare booking" as UC_CreateBooking
+  usecase "View booking" as UC_ViewBooking
+  usecase "Edit booking" as UC_EditBooking
+  usecase "Cancel booking" as UC_CancelBooking
+  usecase "Link booking to one\nexisting pet" as UC_LinkPet
+  usecase "Check available\ndaycare capacity" as UC_Capacity
+}
+
+Staff --> UC_Login
+Staff --> UC_CreatePet
+Staff --> UC_ViewPet
+Staff --> UC_UpdatePet
+Staff --> UC_DeletePet
+Staff --> UC_Alerts
+Staff --> UC_EmergencyVet
+Staff --> UC_Dashboard
+Staff --> UC_CreateBooking
+Staff --> UC_ViewBooking
+Staff --> UC_EditBooking
+Staff --> UC_CancelBooking
+
+UC_Login .> UC_Credentials : <<include>>
+UC_CreateBooking .> UC_LinkPet : <<include>>
+UC_CreateBooking .> UC_Capacity : <<include>>
+UC_EditBooking .> UC_Capacity : <<include when dates change>>
+UC_AlertFlag .> UC_Dashboard : <<extend: active alert exists>>
+
+note right of UC_Login
+All other staff functions require
+successful authentication first.
+end note
+
+note bottom of UC_CreateBooking
+A booking is saved only when the pet
+exists and capacity is available.
+end note
+@enduml
