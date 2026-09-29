@@ -31,6 +31,25 @@ rectangle "Pet Records & Booking System (PRBS)" {
   usecase "Cancel booking" as UC_CancelBooking
   usecase "Link booking to one\nexisting pet" as UC_LinkPet
   usecase "Check available\ndaycare capacity" as UC_Capacity
+
+  usecase "Manage client service\nrequests" as UC_ManageRequests
+  usecase "Create service request" as UC_CreateRequest
+  usecase "View service request" as UC_ViewRequest
+  usecase "Update service request" as UC_UpdateRequest
+  usecase "Assign request to\ntechnician" as UC_AssignRequest
+  usecase "Close service request" as UC_CloseRequest
+
+  usecase "Track equipment" as UC_TrackEquipment
+  usecase "Register equipment" as UC_RegisterEquipment
+  usecase "Update equipment status" as UC_UpdateEquipment
+  usecase "Allocate equipment\nto request" as UC_AllocateEquipment
+  usecase "Return equipment" as UC_ReturnEquipment
+
+  usecase "Manage technician\nschedules" as UC_ManageSchedules
+  usecase "Create technician\nschedule" as UC_CreateSchedule
+  usecase "View technician\nschedule" as UC_ViewSchedule
+  usecase "Update technician\nschedule" as UC_UpdateSchedule
+  usecase "Check technician\navailability" as UC_CheckAvailability
 }
 
 Staff --> UC_Login
@@ -45,6 +64,36 @@ Staff --> UC_CreateBooking
 Staff --> UC_ViewBooking
 Staff --> UC_EditBooking
 Staff --> UC_CancelBooking
+Staff --> UC_ManageRequests
+Staff --> UC_CreateRequest
+Staff --> UC_ViewRequest
+Staff --> UC_UpdateRequest
+Staff --> UC_AssignRequest
+Staff --> UC_CloseRequest
+Staff --> UC_TrackEquipment
+Staff --> UC_RegisterEquipment
+Staff --> UC_UpdateEquipment
+Staff --> UC_AllocateEquipment
+Staff --> UC_ReturnEquipment
+Staff --> UC_ManageSchedules
+Staff --> UC_CreateSchedule
+Staff --> UC_ViewSchedule
+Staff --> UC_UpdateSchedule
+Staff --> UC_CheckAvailability
+
+UC_ManageRequests .> UC_CreateRequest : <<include>>
+UC_ManageRequests .> UC_ViewRequest : <<include>>
+UC_ManageRequests .> UC_UpdateRequest : <<include>>
+UC_ManageRequests .> UC_AssignRequest : <<include>>
+UC_ManageRequests .> UC_CloseRequest : <<include>>
+UC_TrackEquipment .> UC_RegisterEquipment : <<include>>
+UC_TrackEquipment .> UC_UpdateEquipment : <<include>>
+UC_TrackEquipment .> UC_AllocateEquipment : <<include>>
+UC_TrackEquipment .> UC_ReturnEquipment : <<include>>
+UC_ManageSchedules .> UC_CreateSchedule : <<include>>
+UC_ManageSchedules .> UC_ViewSchedule : <<include>>
+UC_ManageSchedules .> UC_UpdateSchedule : <<include>>
+UC_ManageSchedules .> UC_CheckAvailability : <<include>>
 
 UC_Login .> UC_Credentials : <<include>>
 UC_CreateBooking .> UC_LinkPet : <<include>>

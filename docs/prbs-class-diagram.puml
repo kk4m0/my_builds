@@ -98,6 +98,71 @@ package "Domain entities" {
     +Integer maximumCapacity
     +currentOccupancy(startDate, endDate) Integer
   }
+
+  class ServiceRequest <<entity>> {
+    +UUID requestId
+    +String subject
+    +String description
+    +RequestPriority priority
+    +RequestStatus status
+    +DateTime createdAt
+    +DateTime updatedAt
+    +assignTechnician(technicianId)
+    +close()
+  }
+
+  enum RequestPriority {
+    LOW
+    MEDIUM
+    HIGH
+    URGENT
+  }
+
+  enum RequestStatus {
+    OPEN
+    ASSIGNED
+    IN_PROGRESS
+    CLOSED
+  }
+
+  class Equipment <<entity>> {
+    +UUID equipmentId
+    +String name
+    +String category
+    +String serialNumber
+    +EquipmentStatus status
+    +updateStatus(status)
+  }
+
+  enum EquipmentStatus {
+    AVAILABLE
+    ALLOCATED
+    MAINTENANCE
+    RETIRED
+  }
+
+  class Technician <<entity>> {
+    +UUID technicianId
+    +String fullName
+    +String phone
+    +String speciality
+    +isAvailable(startDateTime, endDateTime) Boolean
+  }
+
+  class TechnicianSchedule <<entity>> {
+    +UUID scheduleId
+    +Date shiftDate
+    +Time startTime
+    +Time endTime
+    +ScheduleStatus status
+    +isAvailable() Boolean
+  }
+
+  enum ScheduleStatus {
+    AVAILABLE
+    ASSIGNED
+    LEAVE
+  }
 }
 
 package "Application services" {
@@ -129,6 +194,29 @@ package "Application services" {
     +currentOccupancy(startDate, endDate) Integer
   }
 
+  class ServiceRequestService <<service>> {
+    +createRequest(requestData) ServiceRequest
+    +getRequest(requestId) ServiceRequest
+    +updateRequest(requestId, requestData) ServiceRequest
+    +assignTechnician(requestId, technicianId)
+    +closeRequest(requestId)
+  }
+
+  class EquipmentService <<service>> {
+    +registerEquipment(equipmentData) Equipment
+    +getEquipment(equipmentId) Equipment
+    +updateEquipmentStatus(equipmentId, status)
+    +allocateEquipment(equipmentId, requestId)
+    +returnEquipment(equipmentId)
+  }
+
+  class ScheduleService <<service>> {
+    +createSchedule(scheduleData) TechnicianSchedule
+    +getSchedule(scheduleId) TechnicianSchedule
+    +updateSchedule(scheduleId, scheduleData) TechnicianSchedule
+    +checkTechnicianAvailability(technicianId, timeRange) Boolean
+  }
+
   class Dashboard <<boundary>> {
     +displayMedicalAlertFlags() List<MedicalAlert>
   }
@@ -146,6 +234,16 @@ Booking "0..*" --> "1" Owner : contact owner
 Booking "1" *-- "1" OwnerContactSnapshot : stores
 Booking "0..*" --> "1" DaycareFacility : booked at
 Booking --> BookingStatus : has
+
+Owner "1" --> "0..*" ServiceRequest : submits
+ServiceRequest "0..*" --> "0..1" Technician : assigned to
+ServiceRequest "0..*" --> "0..*" Equipment : uses
+ServiceRequest --> RequestPriority : has
+ServiceRequest --> RequestStatus : has
+Equipment --> EquipmentStatus : has
+Technician "1" --> "0..*" TechnicianSchedule : has
+TechnicianSchedule --> ScheduleStatus : has
+
 MedicalAlert --> AlertSeverity : has
 
 AuthenticationService ..> StaffAccount : authenticates
@@ -158,6 +256,12 @@ BookingService ..> Owner : reads contact details
 BookingService ..> CapacityService : requests check
 CapacityService ..> DaycareFacility : reads maximum capacity
 CapacityService ..> Booking : counts active bookings
+ServiceRequestService ..> ServiceRequest : manages
+ServiceRequestService ..> Technician : assigns
+EquipmentService ..> Equipment : tracks
+EquipmentService ..> ServiceRequest : allocates to
+ScheduleService ..> TechnicianSchedule : manages
+ScheduleService ..> Technician : checks availability
 Dashboard ..> Pet : reads profiles
 Dashboard ..> MedicalAlert : displays active flags
 

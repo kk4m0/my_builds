@@ -3,7 +3,7 @@
 
 This document contains the use case and class diagrams for the Pet Records & Booking System. The diagrams are based on the eight functional requirements supplied for this case study.
 
-> **Scope note.** The supplied brief also mentions client service requests, equipment tracking, and technician schedules, but it does not define requirements for those capabilities. They are therefore not added to the model below; adding unsupported classes or use cases would change the stated scope. They can be added once their functional requirements are provided.
+> **Scope note.** In addition to the eight PRBS requirements, the previously supplied case-study use case includes client service requests, equipment tracking, and technician schedules. Those operational areas are included in the updated diagrams below. The eight numbered requirements remain the detailed rules for pet records, alerts, and bookings; the operational use cases are modelled at the management level where no further field-level rules were supplied.
 
 ## Modelling assumptions
 
@@ -15,12 +15,14 @@ This document contains the use case and class diagrams for the Pet Records & Boo
 - A medical or dietary alert is considered active when it contains a current condition, allergy, or dietary restriction. Active alerts are shown on the dashboard.
 - Emergency veterinary information belongs to the pet profile and may be updated by staff.
 - Owner contact details are stored on the owner profile and captured as a snapshot on a booking so that the contact information used for that booking remains available.
+- Client service requests, equipment records, and technician schedules are managed by authorised staff. A service request can be assigned to a technician and can reference allocated equipment.
+- Technicians are represented as operational users of assigned requests and schedules; the supplied requirements do not define a separate client login workflow.
 
 ---
 
 # 1. Use case diagram
 
-The diagram expands the broad requirements into the staff interactions needed to operate PRBS. CRUD operations are shown separately so that each responsibility is explicit. The two mandatory booking validations are modelled as `<<include>>` relationships: linking the booking to an existing pet and checking capacity happen before a booking is saved. The dashboard alert is a conditional extension of viewing the dashboard.
+The diagram expands the broad requirements into the staff interactions needed to operate PRBS. CRUD operations are shown separately so that each responsibility is explicit. It also retains the previously supplied operational use cases for client service requests, equipment tracking, and technician schedules. The two mandatory booking validations are modelled as `<<include>>` relationships: linking the booking to an existing pet and checking capacity happen before a booking is saved. The dashboard alert is a conditional extension of viewing the dashboard.
 
 ```mermaid
 flowchart LR
@@ -48,6 +50,25 @@ flowchart LR
         CancelBooking(["Cancel booking"])
         LinkPet(["Link booking to one existing pet"])
         Capacity(["Check available daycare capacity"])
+
+        ManageRequests(["Manage client service requests"])
+        CreateRequest(["Create service request"])
+        ViewRequest(["View service request"])
+        UpdateRequest(["Update service request"])
+        AssignRequest(["Assign request to technician"])
+        CloseRequest(["Close service request"])
+
+        TrackEquipment(["Track equipment"])
+        RegisterEquipment(["Register equipment"])
+        UpdateEquipment(["Update equipment status"])
+        AllocateEquipment(["Allocate equipment to request"])
+        ReturnEquipment(["Return equipment"])
+
+        ManageSchedules(["Manage technician schedules"])
+        CreateSchedule(["Create technician schedule"])
+        ViewSchedule(["View technician schedule"])
+        UpdateSchedule(["Update technician schedule"])
+        CheckAvailability(["Check technician availability"])
     end
 
     Staff --> Login
@@ -62,6 +83,36 @@ flowchart LR
     Staff --> ViewBooking
     Staff --> EditBooking
     Staff --> CancelBooking
+    Staff --> ManageRequests
+    Staff --> CreateRequest
+    Staff --> ViewRequest
+    Staff --> UpdateRequest
+    Staff --> AssignRequest
+    Staff --> CloseRequest
+    Staff --> TrackEquipment
+    Staff --> RegisterEquipment
+    Staff --> UpdateEquipment
+    Staff --> AllocateEquipment
+    Staff --> ReturnEquipment
+    Staff --> ManageSchedules
+    Staff --> CreateSchedule
+    Staff --> ViewSchedule
+    Staff --> UpdateSchedule
+    Staff --> CheckAvailability
+
+    ManageRequests -.->|"<<include>>"| CreateRequest
+    ManageRequests -.->|"<<include>>"| ViewRequest
+    ManageRequests -.->|"<<include>>"| UpdateRequest
+    ManageRequests -.->|"<<include>>"| AssignRequest
+    ManageRequests -.->|"<<include>>"| CloseRequest
+    TrackEquipment -.->|"<<include>>"| RegisterEquipment
+    TrackEquipment -.->|"<<include>>"| UpdateEquipment
+    TrackEquipment -.->|"<<include>>"| AllocateEquipment
+    TrackEquipment -.->|"<<include>>"| ReturnEquipment
+    ManageSchedules -.->|"<<include>>"| CreateSchedule
+    ManageSchedules -.->|"<<include>>"| ViewSchedule
+    ManageSchedules -.->|"<<include>>"| UpdateSchedule
+    ManageSchedules -.->|"<<include>>"| CheckAvailability
 
     Login -.->|"<<include>>"| Credentials
     CreateBooking -.->|"<<include>>"| LinkPet
@@ -73,7 +124,7 @@ flowchart LR
     classDef usecase fill:#e7f2fb,stroke:#2b6f9f,color:#102a43,stroke-width:1.5px;
     classDef validation fill:#fff1cc,stroke:#b7791f,color:#4a2c00,stroke-width:1.5px;
     class Staff actor;
-    class Login,CreatePet,ViewPet,UpdatePet,DeletePet,Alerts,EmergencyVet,Dashboard,AlertFlag,CreateBooking,ViewBooking,EditBooking,CancelBooking usecase;
+    class Login,CreatePet,ViewPet,UpdatePet,DeletePet,Alerts,EmergencyVet,Dashboard,AlertFlag,CreateBooking,ViewBooking,EditBooking,CancelBooking,ManageRequests,CreateRequest,ViewRequest,UpdateRequest,AssignRequest,CloseRequest,TrackEquipment,RegisterEquipment,UpdateEquipment,AllocateEquipment,ReturnEquipment,ManageSchedules,CreateSchedule,ViewSchedule,UpdateSchedule,CheckAvailability usecase;
     class Credentials,LinkPet,Capacity validation;
 ```
 
@@ -89,6 +140,9 @@ flowchart LR
 | UC-06 | Link booking to one existing pet | PRBS during booking save | 6 | The save is rejected unless the referenced pet already exists. |
 | UC-07 | Check available daycare capacity | PRBS during booking save | 7 | The save is rejected when the date range would exceed maximum capacity. |
 | UC-08 | Capture emergency veterinary information | Authorised staff member | 8 | Emergency veterinary contact details are stored on the pet profile. |
+| UC-09 | Manage client service requests | Authorised staff member | Previously supplied use case | Requests can be created, viewed, updated, assigned to a technician, and closed. |
+| UC-10 | Track equipment | Authorised staff member | Previously supplied use case | Equipment can be registered, status-tracked, allocated to a request, and returned. |
+| UC-11 | Manage technician schedules | Authorised staff member | Previously supplied use case | Technician schedules can be created, viewed, updated, and checked for availability. |
 
 ### Booking validation flow
 
@@ -104,14 +158,15 @@ No Assignment 1 artefact was present in the supplied repository. The following d
 - pet profile maintenance is decomposed into create, view, update, and delete interactions;
 - alert capture is separated from the dashboard flag that displays the result;
 - the emergency veterinary information interaction is included in the pet-profile area;
-- booking-to-pet validation and daycare capacity validation are explicit included use cases; and
-- authentication is shown as a prerequisite for protected staff functions.
+- booking-to-pet validation and daycare capacity validation are explicit included use cases;
+- authentication is shown as a prerequisite for protected staff functions; and
+- the previously supplied client service request, equipment tracking, and technician scheduling use cases are retained and expanded into their main staff actions.
 
 ---
 
 # 2. Class diagram
 
-The class diagram separates the core records from the services that enforce the business rules. `Pet`, `Owner`, `MedicalAlert`, `EmergencyVetContact`, and `Booking` represent persistent domain information. The service classes coordinate authentication, profile maintenance, booking validation, capacity checks, and dashboard alert display. Multiplicities show the required booking-to-pet link and the one-owner relationship.
+The class diagram separates the core records from the services that enforce the business rules. `Pet`, `Owner`, `MedicalAlert`, `EmergencyVetContact`, and `Booking` represent the PRBS records; `ServiceRequest`, `Equipment`, `Technician`, and `TechnicianSchedule` represent the operational records from the previously supplied use case. The service classes coordinate authentication, profile maintenance, booking validation, capacity checks, request management, equipment tracking, scheduling, and dashboard alert display. Multiplicities show the required booking-to-pet link, the one-owner relationship, request assignments, and schedule ownership.
 
 ```mermaid
 classDiagram
@@ -223,6 +278,79 @@ classDiagram
         +currentOccupancy(startDate, endDate) Integer
     }
 
+    class ServiceRequest {
+        <<entity>>
+        +UUID requestId
+        +String subject
+        +String description
+        +RequestPriority priority
+        +RequestStatus status
+        +DateTime createdAt
+        +DateTime updatedAt
+        +assignTechnician(technicianId) void
+        +close() void
+    }
+
+    class RequestPriority {
+        <<enumeration>>
+        LOW
+        MEDIUM
+        HIGH
+        URGENT
+    }
+
+    class RequestStatus {
+        <<enumeration>>
+        OPEN
+        ASSIGNED
+        IN_PROGRESS
+        CLOSED
+    }
+
+    class Equipment {
+        <<entity>>
+        +UUID equipmentId
+        +String name
+        +String category
+        +String serialNumber
+        +EquipmentStatus status
+        +updateStatus(status) void
+    }
+
+    class EquipmentStatus {
+        <<enumeration>>
+        AVAILABLE
+        ALLOCATED
+        MAINTENANCE
+        RETIRED
+    }
+
+    class Technician {
+        <<entity>>
+        +UUID technicianId
+        +String fullName
+        +String phone
+        +String speciality
+        +isAvailable(startDateTime, endDateTime) Boolean
+    }
+
+    class TechnicianSchedule {
+        <<entity>>
+        +UUID scheduleId
+        +Date shiftDate
+        +Time startTime
+        +Time endTime
+        +ScheduleStatus status
+        +isAvailable() Boolean
+    }
+
+    class ScheduleStatus {
+        <<enumeration>>
+        AVAILABLE
+        ASSIGNED
+        LEAVE
+    }
+
     class AuthenticationService {
         <<service>>
         +login(username, password) StaffAccount
@@ -255,6 +383,32 @@ classDiagram
         +currentOccupancy(startDate, endDate) Integer
     }
 
+    class ServiceRequestService {
+        <<service>>
+        +createRequest(requestData) ServiceRequest
+        +getRequest(requestId) ServiceRequest
+        +updateRequest(requestId, requestData) ServiceRequest
+        +assignTechnician(requestId, technicianId) void
+        +closeRequest(requestId) void
+    }
+
+    class EquipmentService {
+        <<service>>
+        +registerEquipment(equipmentData) Equipment
+        +getEquipment(equipmentId) Equipment
+        +updateEquipmentStatus(equipmentId, status) void
+        +allocateEquipment(equipmentId, requestId) void
+        +returnEquipment(equipmentId) void
+    }
+
+    class ScheduleService {
+        <<service>>
+        +createSchedule(scheduleData) TechnicianSchedule
+        +getSchedule(scheduleId) TechnicianSchedule
+        +updateSchedule(scheduleId, scheduleData) TechnicianSchedule
+        +checkTechnicianAvailability(technicianId, timeRange) Boolean
+    }
+
     class Dashboard {
         <<boundary>>
         +displayMedicalAlertFlags() List~MedicalAlert~
@@ -273,6 +427,15 @@ classDiagram
     Booking "0..*" --> "1" DaycareFacility : booked at
     Booking --> BookingStatus : has
 
+    Owner "1" --> "0..*" ServiceRequest : submits
+    ServiceRequest "0..*" --> "0..1" Technician : assigned to
+    ServiceRequest "0..*" --> "0..*" Equipment : uses
+    ServiceRequest --> RequestPriority : has
+    ServiceRequest --> RequestStatus : has
+    Equipment --> EquipmentStatus : has
+    Technician "1" --> "0..*" TechnicianSchedule : has
+    TechnicianSchedule --> ScheduleStatus : has
+
     MedicalAlert --> AlertSeverity : has
 
     AuthenticationService ..> StaffAccount : authenticates
@@ -285,6 +448,12 @@ classDiagram
     BookingService ..> CapacityService : requests check
     CapacityService ..> DaycareFacility : reads maximum capacity
     CapacityService ..> Booking : counts active bookings
+    ServiceRequestService ..> ServiceRequest : manages
+    ServiceRequestService ..> Technician : assigns
+    EquipmentService ..> Equipment : tracks
+    EquipmentService ..> ServiceRequest : allocates to
+    ScheduleService ..> TechnicianSchedule : manages
+    ScheduleService ..> Technician : checks availability
     Dashboard ..> Pet : reads profiles
     Dashboard ..> MedicalAlert : displays active flags
 ```
@@ -300,6 +469,10 @@ classDiagram
 | `EmergencyVetContact` | Stores the emergency veterinary contact captured for a pet. |
 | `Booking` | Stores stay dates, status, the required pet reference, owner reference, and a contact snapshot. |
 | `DaycareFacility` and `CapacityService` | Represent maximum capacity and the occupancy check used before a booking is saved. |
+| `ServiceRequest` and `ServiceRequestService` | Store and manage client service requests, including assignment to a technician and closure. |
+| `Equipment` and `EquipmentService` | Register equipment, maintain its status, and allocate or return it for a service request. |
+| `Technician` and `TechnicianSchedule` | Store technician details, working periods, availability, and schedule status. |
+| `ScheduleService` | Creates and updates schedules and checks technician availability before assignment. |
 | `AuthenticationService` | Enforces the login prerequisite. |
 | `PetProfileService` | Performs pet CRUD operations and captures alert and emergency veterinary data. |
 | `BookingService` | Performs booking CRUD/cancellation and coordinates pet-link and capacity validation. |
@@ -312,6 +485,9 @@ classDiagram
 - `Pet "1" *-- "0..*" MedicalAlert`: a pet may have no alerts or several alert records; only active records are shown on the dashboard.
 - `Booking "1" *-- "1" OwnerContactSnapshot`: every booking retains the owner contact information used for that booking.
 - `Booking "0..*" --> "1" DaycareFacility`: capacity is evaluated against the facility where the booking is made.
+- `ServiceRequest "0..*" --> "0..1" Technician`: a request may be unassigned while open, then assigned to at most one technician.
+- `Technician "1" --> "0..*" TechnicianSchedule`: a technician may have many schedule records, while each schedule belongs to one technician.
+- `ServiceRequest "0..*" --> "0..*" Equipment`: equipment may be allocated to requests over time and can be returned when work is complete.
 
 ## Diagram source files
 
