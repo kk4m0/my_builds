@@ -45,6 +45,13 @@ class EmergencyVetContact <<entity>> {
   +String address
 }
 
+class DailyStatus <<entity>> {
+  +UUID statusId
+  +Date statusDate
+  +String notes
+  +String careStatus
+}
+
 class Booking <<entity>> {
   +UUID bookingId
   +Date startDate
@@ -60,6 +67,14 @@ class DaycareFacility <<entity>> {
   +UUID facilityId
   +String name
   +Integer maximumCapacity
+}
+
+class OccupancyReport <<entity>> {
+  +UUID reportId
+  +Date reportDate
+  +Integer occupiedPlaces
+  +Integer availablePlaces
+  +generate()
 }
 
 class ServiceRequest <<entity>> {
@@ -98,10 +113,13 @@ class TechnicianSchedule <<entity>> {
 Owner "1" --> "0..*" Pet : owns
 Pet "1" *-- "0..*" MedicalAlert : has
 Pet "1" *-- "0..1" EmergencyVetContact : has
+Pet "1" *-- "0..*" DailyStatus : records
 
 Booking "0..*" --> "1" Pet : for
 Booking "0..*" --> "1" Owner : contact owner
 Booking "0..*" --> "1" DaycareFacility : booked at
+DaycareFacility "1" --> "0..*" OccupancyReport : produces
+OccupancyReport ..> Booking : counts
 
 Owner "1" --> "0..*" ServiceRequest : submits
 ServiceRequest "0..*" --> "0..1" Technician : assigned to
@@ -111,6 +129,7 @@ Technician "1" --> "0..*" TechnicianSchedule : has
 StaffAccount ..> Pet : maintains records
 StaffAccount ..> Booking : manages
 StaffAccount ..> ServiceRequest : manages
+StaffAccount ..> OccupancyReport : generates
 
 note "Every booking references one existing Pet and must pass the capacity check before it is saved." as BookingRule
 BookingRule .. Booking
