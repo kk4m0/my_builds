@@ -10,6 +10,12 @@ skinparam usecase {
 }
 
 actor "Authorised staff member" as Staff
+actor "Pet owner / client" as PetOwner
+actor "System administrator" as Admin
+actor "Manager" as Manager
+
+Admin --|> Staff
+Manager --|> Staff
 
 rectangle "Pet Records & Booking System (PRBS)" {
   package "Accounts and authentication" {
@@ -58,6 +64,28 @@ Staff --> UC_OccupancyReport
 Staff --> UC_Requests
 Staff --> UC_Equipment
 Staff --> UC_Schedules
+
+PetOwner --> UC_Login
+PetOwner --> UC_RegisterPet
+PetOwner --> UC_MaintainPet
+PetOwner --> UC_VetContact
+PetOwner --> UC_CreateBooking
+PetOwner --> UC_MaintainBooking
+PetOwner --> UC_ViewAlerts
+PetOwner --> UC_Requests
+
+Admin --> UC_Login
+Admin --> UC_StaffAccounts
+Admin --> UC_Equipment
+Admin --> UC_OccupancyReport
+
+Manager --> UC_Login
+Manager --> UC_ViewAlerts
+Manager --> UC_MaintainBooking
+Manager --> UC_OccupancyReport
+Manager --> UC_Requests
+Manager --> UC_Equipment
+Manager --> UC_Schedules
 
 UC_Login .> UC_Credentials : <<include>>
 UC_RegisterPet .> UC_VetContact : <<include>>

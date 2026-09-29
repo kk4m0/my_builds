@@ -7,8 +7,9 @@ This document combines the current PRBS use case with the previously supplied us
 
 ## Modelling assumptions
 
-- Authorised staff members are the primary system users and must log in before using protected functions.
-- Staff maintain owner/client, pet, booking, request, equipment, and technician records.
+- The main actors are the **pet owner/client**, **authorised staff member**, **system administrator**, and **manager**.
+- All actors who access protected functions authenticate before using them. System administrators and managers are specialised staff roles.
+- Pet owners submit and view their own pet, booking, alert, and service-request information; staff maintain the records.
 - Each booking is linked to one existing pet and must pass a facility capacity check before it is saved.
 - A pet may have several alerts and daily-status records, plus one emergency veterinary contact.
 - A service request may be assigned to one technician and may use equipment. Technicians may have several schedule records.
@@ -22,6 +23,9 @@ The following diagram combines the supplied reference use cases with the PRBS re
 ```mermaid
 flowchart LR
     Staff["Authorised staff member"]
+    PetOwner["Pet owner / client"]
+    Admin["System administrator"]
+    Manager["Manager"]
 
     subgraph PRBS["Pet Records & Booking System (PRBS)"]
         direction TB
@@ -73,6 +77,28 @@ flowchart LR
     Staff --> Equipment
     Staff --> Schedules
 
+    PetOwner --> Login
+    PetOwner --> RegisterPet
+    PetOwner --> MaintainPet
+    PetOwner --> VetContact
+    PetOwner --> CreateBooking
+    PetOwner --> MaintainBooking
+    PetOwner --> ViewAlerts
+    PetOwner --> Requests
+
+    Admin --> Login
+    Admin --> StaffAccounts
+    Admin --> Equipment
+    Admin --> OccupancyReport
+
+    Manager --> Login
+    Manager --> ViewAlerts
+    Manager --> MaintainBooking
+    Manager --> OccupancyReport
+    Manager --> Requests
+    Manager --> Equipment
+    Manager --> Schedules
+
     Login -.->|"<<include>>"| Credentials
     RegisterPet -.->|"<<include>>"| VetContact
     CreateBooking -.->|"<<include>>"| LinkPet
@@ -84,7 +110,7 @@ flowchart LR
     classDef actor fill:#17324d,stroke:#0b1f33,color:#ffffff,stroke-width:2px;
     classDef usecase fill:#e7f2fb,stroke:#2b6f9f,color:#102a43,stroke-width:1.5px;
     classDef validation fill:#fff1cc,stroke:#b7791f,color:#4a2c00,stroke-width:1.5px;
-    class Staff actor;
+    class Staff,PetOwner,Admin,Manager actor;
     class Login,StaffAccounts,RegisterPet,MaintainPet,VetContact,MaintainAlerts,ViewAlerts,MedicalDetail,DailyStatus,CreateBooking,MaintainBooking,OccupancyWarning,OccupancyReport,Requests,Equipment,Schedules usecase;
     class Credentials,LinkPet,Capacity validation;
 ```
@@ -111,6 +137,15 @@ flowchart LR
 | — | Manage client service requests | Create, view, update, assign to a technician, and close requests. | Previously supplied operational scope |
 | — | Track equipment | Register equipment, update status, allocate it to a request, and return it. | Previously supplied operational scope |
 | — | Manage technician schedules | Create, view, and update schedules and check technician availability. | Previously supplied operational scope |
+
+### Actor responsibilities
+
+| Actor | Main responsibilities in PRBS |
+|---|---|
+| **Pet owner / client** | Register and maintain their pet information, provide veterinary details, create and maintain bookings, view alerts, and submit service requests. |
+| **Authorised staff member** | Maintain operational records, bookings, alerts, daily status, equipment, requests, and schedules. |
+| **System administrator** | Authenticate and manage staff accounts, equipment, and system occupancy information. |
+| **Manager** | Review alerts, bookings, occupancy reports, service requests, equipment, and technician schedules. |
 
 ### Main use case rules
 
@@ -288,6 +323,7 @@ classDiagram
 - `OccupancyReport` uses booking information for the facility and reporting date.
 - A `ServiceRequest` may be assigned to zero or one `Technician` and may use multiple pieces of equipment.
 - A `Technician` may have multiple schedule records.
+- `Owner` represents the pet owner/client actor, while `StaffAccount.role` distinguishes authorised staff, system administrators, and managers.
 
 ## Diagram source files
 
