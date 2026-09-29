@@ -4,268 +4,114 @@ skinparam classAttributeIconSize 0
 skinparam shadowing false
 skinparam linetype ortho
 
-package "Domain entities" {
-  class StaffAccount <<entity>> {
-    +UUID staffId
-    +String username
-    -String passwordHash
-    +StaffRole role
-    +AccountStatus status
-    +DateTime lastLoginAt
-    +authenticate(password) Boolean
-  }
-
-  enum StaffRole {
-    ADMIN
-    RECEPTION
-    MANAGER
-  }
-
-  enum AccountStatus {
-    ACTIVE
-    LOCKED
-    DISABLED
-  }
-
-  class Owner <<entity>> {
-    +UUID ownerId
-    +String fullName
-    +String phone
-    +String email
-    +String address
-    +updateContactDetails()
-  }
-
-  class Pet <<entity>> {
-    +UUID petId
-    +String name
-    +String breed
-    +Integer ageYears
-    +hasActiveMedicalAlert() Boolean
-  }
-
-  class MedicalAlert <<entity>> {
-    +UUID alertId
-    +String medicalConditions
-    +String allergies
-    +String dietaryRestrictions
-    +AlertSeverity severity
-    +Boolean active
-    +DateTime updatedAt
-    +isActive() Boolean
-  }
-
-  enum AlertSeverity {
-    LOW
-    MEDIUM
-    HIGH
-    CRITICAL
-  }
-
-  class EmergencyVetContact <<entity>> {
-    +UUID contactId
-    +String contactName
-    +String practiceName
-    +String phone
-    +String address
-  }
-
-  class Booking <<entity>> {
-    +UUID bookingId
-    +Date startDate
-    +Date endDate
-    +BookingStatus status
-    +DateTime createdAt
-    +DateTime updatedAt
-    +validateDates() Boolean
-    +cancel()
-  }
-
-  class OwnerContactSnapshot <<value object>> {
-    +String fullName
-    +String phone
-    +String email
-  }
-
-  enum BookingStatus {
-    CONFIRMED
-    CANCELLED
-  }
-
-  class DaycareFacility <<entity>> {
-    +UUID facilityId
-    +String name
-    +Integer maximumCapacity
-    +currentOccupancy(startDate, endDate) Integer
-  }
-
-  class ServiceRequest <<entity>> {
-    +UUID requestId
-    +String subject
-    +String description
-    +RequestPriority priority
-    +RequestStatus status
-    +DateTime createdAt
-    +DateTime updatedAt
-    +assignTechnician(technicianId)
-    +close()
-  }
-
-  enum RequestPriority {
-    LOW
-    MEDIUM
-    HIGH
-    URGENT
-  }
-
-  enum RequestStatus {
-    OPEN
-    ASSIGNED
-    IN_PROGRESS
-    CLOSED
-  }
-
-  class Equipment <<entity>> {
-    +UUID equipmentId
-    +String name
-    +String category
-    +String serialNumber
-    +EquipmentStatus status
-    +updateStatus(status)
-  }
-
-  enum EquipmentStatus {
-    AVAILABLE
-    ALLOCATED
-    MAINTENANCE
-    RETIRED
-  }
-
-  class Technician <<entity>> {
-    +UUID technicianId
-    +String fullName
-    +String phone
-    +String speciality
-    +isAvailable(startDateTime, endDateTime) Boolean
-  }
-
-  class TechnicianSchedule <<entity>> {
-    +UUID scheduleId
-    +Date shiftDate
-    +Time startTime
-    +Time endTime
-    +ScheduleStatus status
-    +isAvailable() Boolean
-  }
-
-  enum ScheduleStatus {
-    AVAILABLE
-    ASSIGNED
-    LEAVE
-  }
+class StaffAccount <<entity>> {
+  +UUID staffId
+  +String username
+  +String passwordHash
+  +String role
+  +authenticate(password) Boolean
 }
 
-package "Application services" {
-  class AuthenticationService <<service>> {
-    +login(username, password) StaffAccount
-    +logout(staffId)
-  }
-
-  class PetProfileService <<service>> {
-    +createPet(profileData) Pet
-    +getPet(petId) Pet
-    +updatePet(petId, profileData) Pet
-    +deletePet(petId)
-    +recordAlert(petId, alertData) MedicalAlert
-    +captureEmergencyVet(petId, contactData) EmergencyVetContact
-  }
-
-  class BookingService <<service>> {
-    +createBooking(bookingData) Booking
-    +getBooking(bookingId) Booking
-    +updateBooking(bookingId, bookingData) Booking
-    +cancelBooking(bookingId)
-    +validatePetLink(petId) Boolean
-    +checkCapacity(bookingData) Boolean
-  }
-
-  class CapacityService <<service>> {
-    +hasAvailability(startDate, endDate) Boolean
-    +currentOccupancy(startDate, endDate) Integer
-  }
-
-  class ServiceRequestService <<service>> {
-    +createRequest(requestData) ServiceRequest
-    +getRequest(requestId) ServiceRequest
-    +updateRequest(requestId, requestData) ServiceRequest
-    +assignTechnician(requestId, technicianId)
-    +closeRequest(requestId)
-  }
-
-  class EquipmentService <<service>> {
-    +registerEquipment(equipmentData) Equipment
-    +getEquipment(equipmentId) Equipment
-    +updateEquipmentStatus(equipmentId, status)
-    +allocateEquipment(equipmentId, requestId)
-    +returnEquipment(equipmentId)
-  }
-
-  class ScheduleService <<service>> {
-    +createSchedule(scheduleData) TechnicianSchedule
-    +getSchedule(scheduleId) TechnicianSchedule
-    +updateSchedule(scheduleId, scheduleData) TechnicianSchedule
-    +checkTechnicianAvailability(technicianId, timeRange) Boolean
-  }
-
-  class Dashboard <<boundary>> {
-    +displayMedicalAlertFlags() List<MedicalAlert>
-  }
+class Owner <<entity>> {
+  +UUID ownerId
+  +String fullName
+  +String phone
+  +String email
+  +String address
 }
 
-StaffAccount --> StaffRole : has
-StaffAccount --> AccountStatus : has
+class Pet <<entity>> {
+  +UUID petId
+  +String name
+  +String breed
+  +Integer ageYears
+  +hasActiveAlert() Boolean
+}
+
+class MedicalAlert <<entity>> {
+  +UUID alertId
+  +String medicalConditions
+  +String allergies
+  +String dietaryRestrictions
+  +Boolean active
+  +DateTime updatedAt
+}
+
+class EmergencyVetContact <<entity>> {
+  +UUID contactId
+  +String contactName
+  +String practiceName
+  +String phone
+  +String address
+}
+
+class Booking <<entity>> {
+  +UUID bookingId
+  +Date startDate
+  +Date endDate
+  +String status
+  +String ownerContactName
+  +String ownerContactPhone
+  +validateDates() Boolean
+  +cancel()
+}
+
+class DaycareFacility <<entity>> {
+  +UUID facilityId
+  +String name
+  +Integer maximumCapacity
+}
+
+class ServiceRequest <<entity>> {
+  +UUID requestId
+  +String subject
+  +String description
+  +String priority
+  +String status
+  +close()
+}
+
+class Equipment <<entity>> {
+  +UUID equipmentId
+  +String name
+  +String category
+  +String status
+  +updateStatus(status)
+}
+
+class Technician <<entity>> {
+  +UUID technicianId
+  +String fullName
+  +String phone
+  +String speciality
+}
+
+class TechnicianSchedule <<entity>> {
+  +UUID scheduleId
+  +Date shiftDate
+  +Time startTime
+  +Time endTime
+  +String status
+  +isAvailable() Boolean
+}
 
 Owner "1" --> "0..*" Pet : owns
-Pet "1" *-- "0..*" MedicalAlert : records
+Pet "1" *-- "0..*" MedicalAlert : has
 Pet "1" *-- "0..1" EmergencyVetContact : has
 
 Booking "0..*" --> "1" Pet : for
 Booking "0..*" --> "1" Owner : contact owner
-Booking "1" *-- "1" OwnerContactSnapshot : stores
 Booking "0..*" --> "1" DaycareFacility : booked at
-Booking --> BookingStatus : has
 
 Owner "1" --> "0..*" ServiceRequest : submits
 ServiceRequest "0..*" --> "0..1" Technician : assigned to
 ServiceRequest "0..*" --> "0..*" Equipment : uses
-ServiceRequest --> RequestPriority : has
-ServiceRequest --> RequestStatus : has
-Equipment --> EquipmentStatus : has
 Technician "1" --> "0..*" TechnicianSchedule : has
-TechnicianSchedule --> ScheduleStatus : has
 
-MedicalAlert --> AlertSeverity : has
+StaffAccount ..> Pet : maintains records
+StaffAccount ..> Booking : manages
+StaffAccount ..> ServiceRequest : manages
 
-AuthenticationService ..> StaffAccount : authenticates
-PetProfileService ..> Pet : maintains
-PetProfileService ..> MedicalAlert : records and updates
-PetProfileService ..> EmergencyVetContact : captures
-BookingService ..> Booking : manages
-BookingService ..> Pet : requires existing pet
-BookingService ..> Owner : reads contact details
-BookingService ..> CapacityService : requests check
-CapacityService ..> DaycareFacility : reads maximum capacity
-CapacityService ..> Booking : counts active bookings
-ServiceRequestService ..> ServiceRequest : manages
-ServiceRequestService ..> Technician : assigns
-EquipmentService ..> Equipment : tracks
-EquipmentService ..> ServiceRequest : allocates to
-ScheduleService ..> TechnicianSchedule : manages
-ScheduleService ..> Technician : checks availability
-Dashboard ..> Pet : reads profiles
-Dashboard ..> MedicalAlert : displays active flags
-
-note "Every booking references exactly one existing Pet.\nA booking is saved only after the pet-link and capacity checks pass." as BookingRule
+note "Every booking references one existing Pet and must pass the capacity check before it is saved." as BookingRule
 BookingRule .. Booking
-
 @enduml

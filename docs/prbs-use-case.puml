@@ -12,101 +12,36 @@ skinparam usecase {
 actor "Authorised staff member" as Staff
 
 rectangle "Pet Records & Booking System (PRBS)" {
-  usecase "Log in" as UC_Login
-  usecase "Validate username\nand password" as UC_Credentials
-
-  usecase "Create pet profile" as UC_CreatePet
-  usecase "View pet profile" as UC_ViewPet
-  usecase "Update pet profile" as UC_UpdatePet
-  usecase "Delete pet profile" as UC_DeletePet
-  usecase "Record or update medical\nand dietary alerts" as UC_Alerts
-  usecase "Capture emergency\nveterinary information" as UC_EmergencyVet
-
-  usecase "View dashboard" as UC_Dashboard
-  usecase "Display medical\nalert flag" as UC_AlertFlag
-
-  usecase "Create daycare booking" as UC_CreateBooking
-  usecase "View booking" as UC_ViewBooking
-  usecase "Edit booking" as UC_EditBooking
-  usecase "Cancel booking" as UC_CancelBooking
-  usecase "Link booking to one\nexisting pet" as UC_LinkPet
-  usecase "Check available\ndaycare capacity" as UC_Capacity
-
-  usecase "Manage client service\nrequests" as UC_ManageRequests
-  usecase "Create service request" as UC_CreateRequest
-  usecase "View service request" as UC_ViewRequest
-  usecase "Update service request" as UC_UpdateRequest
-  usecase "Assign request to\ntechnician" as UC_AssignRequest
-  usecase "Close service request" as UC_CloseRequest
-
-  usecase "Track equipment" as UC_TrackEquipment
-  usecase "Register equipment" as UC_RegisterEquipment
-  usecase "Update equipment status" as UC_UpdateEquipment
-  usecase "Allocate equipment\nto request" as UC_AllocateEquipment
-  usecase "Return equipment" as UC_ReturnEquipment
-
-  usecase "Manage technician\nschedules" as UC_ManageSchedules
-  usecase "Create technician\nschedule" as UC_CreateSchedule
-  usecase "View technician\nschedule" as UC_ViewSchedule
-  usecase "Update technician\nschedule" as UC_UpdateSchedule
-  usecase "Check technician\navailability" as UC_CheckAvailability
+  usecase "Authenticate staff" as UC_Login
+  usecase "Manage pet profiles\n(create / view / update / delete)" as UC_PetProfiles
+  usecase "Manage medical and dietary alerts\n(record / update / display flag)" as UC_Alerts
+  usecase "Manage emergency veterinary\ninformation" as UC_VetInfo
+  usecase "Manage daycare bookings\n(create / view / edit / cancel)" as UC_Bookings
+  usecase "Validate pet is linked\nto an existing profile" as UC_LinkPet
+  usecase "Check daycare capacity" as UC_Capacity
+  usecase "Manage client service requests\n(create / update / assign / close)" as UC_Requests
+  usecase "Track equipment\n(register / update / allocate / return)" as UC_Equipment
+  usecase "Manage technician schedules\n(create / view / update / check availability)" as UC_Schedules
 }
 
 Staff --> UC_Login
-Staff --> UC_CreatePet
-Staff --> UC_ViewPet
-Staff --> UC_UpdatePet
-Staff --> UC_DeletePet
+Staff --> UC_PetProfiles
 Staff --> UC_Alerts
-Staff --> UC_EmergencyVet
-Staff --> UC_Dashboard
-Staff --> UC_CreateBooking
-Staff --> UC_ViewBooking
-Staff --> UC_EditBooking
-Staff --> UC_CancelBooking
-Staff --> UC_ManageRequests
-Staff --> UC_CreateRequest
-Staff --> UC_ViewRequest
-Staff --> UC_UpdateRequest
-Staff --> UC_AssignRequest
-Staff --> UC_CloseRequest
-Staff --> UC_TrackEquipment
-Staff --> UC_RegisterEquipment
-Staff --> UC_UpdateEquipment
-Staff --> UC_AllocateEquipment
-Staff --> UC_ReturnEquipment
-Staff --> UC_ManageSchedules
-Staff --> UC_CreateSchedule
-Staff --> UC_ViewSchedule
-Staff --> UC_UpdateSchedule
-Staff --> UC_CheckAvailability
+Staff --> UC_VetInfo
+Staff --> UC_Bookings
+Staff --> UC_Requests
+Staff --> UC_Equipment
+Staff --> UC_Schedules
 
-UC_ManageRequests .> UC_CreateRequest : <<include>>
-UC_ManageRequests .> UC_ViewRequest : <<include>>
-UC_ManageRequests .> UC_UpdateRequest : <<include>>
-UC_ManageRequests .> UC_AssignRequest : <<include>>
-UC_ManageRequests .> UC_CloseRequest : <<include>>
-UC_TrackEquipment .> UC_RegisterEquipment : <<include>>
-UC_TrackEquipment .> UC_UpdateEquipment : <<include>>
-UC_TrackEquipment .> UC_AllocateEquipment : <<include>>
-UC_TrackEquipment .> UC_ReturnEquipment : <<include>>
-UC_ManageSchedules .> UC_CreateSchedule : <<include>>
-UC_ManageSchedules .> UC_ViewSchedule : <<include>>
-UC_ManageSchedules .> UC_UpdateSchedule : <<include>>
-UC_ManageSchedules .> UC_CheckAvailability : <<include>>
-
-UC_Login .> UC_Credentials : <<include>>
-UC_CreateBooking .> UC_LinkPet : <<include>>
-UC_CreateBooking .> UC_Capacity : <<include>>
-UC_EditBooking .> UC_Capacity : <<include when dates change>>
-UC_AlertFlag .> UC_Dashboard : <<extend: active alert exists>>
+UC_Bookings .> UC_LinkPet : <<include>>
+UC_Bookings .> UC_Capacity : <<include>>
 
 note right of UC_Login
-All other staff functions require
-successful authentication first.
+Successful authentication is required
+before protected functions are used.
 end note
 
-note bottom of UC_CreateBooking
+note bottom of UC_Bookings
 A booking is saved only when the pet
 exists and capacity is available.
 end note
