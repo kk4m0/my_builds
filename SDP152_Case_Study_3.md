@@ -18,25 +18,37 @@ This document combines the current PRBS use case with the previously supplied us
 
 # 1. Use case diagram
 
-The following diagram combines the supplied reference use cases with the PRBS requirements and operational scope. The FR labels from the reference are retained. The two booking validations are shown as `<<include>>` relationships, while conditional warnings and detail displays are shown as `<<extend>>` relationships.
+The following diagram combines the supplied reference use cases with the PRBS requirements and operational scope. The FR labels from the reference are retained. Actor arrows connect to summary use cases so that they do not cross over the detailed cases; the detailed cases are linked inside the system boundary. Required details and booking validations are shown as `<<include>>` relationships, while the conditional occupancy warning is shown as an `<<extend>>` relationship.
 
 ```mermaid
 flowchart LR
-    Staff["Authorised staff member"]
-    PetOwner["Pet owner / client"]
-    Admin["System administrator"]
-    Manager["Manager"]
+    subgraph Actors["Actors"]
+        direction TB
+        PetOwner["Pet owner / client"]
+        Staff["Authorised staff member"]
+        Admin["System administrator"]
+        Manager["Manager"]
+    end
 
     subgraph PRBS["Pet Records & Booking System (PRBS)"]
         direction TB
 
-        subgraph Accounts["Accounts and authentication"]
-            Login(["Log in (FR1)"])
+        Authenticate(["Authenticate user (FR1)"])
+        StaffManagement(["Manage staff accounts (FR2)"])
+        PetManagement(["Manage pet records and alerts"])
+        BookingManagement(["Manage bookings and capacity"])
+        RequestManagement(["Manage client service requests"])
+        EquipmentManagement(["Track equipment"])
+        ScheduleManagement(["Manage technician schedules"])
+        OccupancyManagement(["Generate occupancy report (FR12)"])
+
+        subgraph AccountDetails["Authentication details"]
+            direction LR
             Credentials(["Authenticate credentials"])
-            StaffAccounts(["Manage staff accounts (FR2)"])
         end
 
-        subgraph PetRecords["Pet records and alerts"]
+        subgraph PetDetails["Pet records and alerts"]
+            direction LR
             RegisterPet(["Register pet profile (FR3)"])
             MaintainPet(["Maintain pet profile (FR4)"])
             VetContact(["Capture vet contact / emergency vet information (FR5)"])
@@ -46,74 +58,58 @@ flowchart LR
             DailyStatus(["Update daily status (FR11)"])
         end
 
-        subgraph Bookings["Bookings and capacity"]
+        subgraph BookingDetails["Bookings and capacity"]
+            direction LR
             CreateBooking(["Create booking (FR6)"])
             MaintainBooking(["Maintain booking (FR7)"])
             LinkPet(["Link booking to pet profile (FR8)"])
             Capacity(["Check facility capacity (FR9)"])
             OccupancyWarning(["Display occupancy warning"])
-            OccupancyReport(["Generate occupancy report (FR12)"])
-        end
-
-        subgraph Operations["Operational management"]
-            Requests(["Manage client service requests\n(create / view / update / assign / close)"])
-            Equipment(["Track equipment\n(register / update / allocate / return)"])
-            Schedules(["Manage technician schedules\n(create / view / update / check availability)"])
         end
     end
 
-    Staff --> Login
-    Staff --> StaffAccounts
-    Staff --> RegisterPet
-    Staff --> MaintainPet
-    Staff --> VetContact
-    Staff --> MaintainAlerts
-    Staff --> ViewAlerts
-    Staff --> DailyStatus
-    Staff --> CreateBooking
-    Staff --> MaintainBooking
-    Staff --> OccupancyReport
-    Staff --> Requests
-    Staff --> Equipment
-    Staff --> Schedules
+    PetOwner --> Authenticate
+    PetOwner --> PetManagement
+    PetOwner --> BookingManagement
+    PetOwner --> RequestManagement
 
-    PetOwner --> Login
-    PetOwner --> RegisterPet
-    PetOwner --> MaintainPet
-    PetOwner --> VetContact
-    PetOwner --> CreateBooking
-    PetOwner --> MaintainBooking
-    PetOwner --> ViewAlerts
-    PetOwner --> Requests
+    Staff --> Authenticate
+    Staff --> PetManagement
+    Staff --> BookingManagement
+    Staff --> RequestManagement
+    Staff --> EquipmentManagement
+    Staff --> ScheduleManagement
+    Staff --> OccupancyManagement
 
-    Admin --> Login
-    Admin --> StaffAccounts
-    Admin --> Equipment
-    Admin --> OccupancyReport
+    Admin -.->|"specialises in"| Staff
+    Admin --> StaffManagement
+    Manager -.->|"specialises in"| Staff
 
-    Manager --> Login
-    Manager --> ViewAlerts
-    Manager --> MaintainBooking
-    Manager --> OccupancyReport
-    Manager --> Requests
-    Manager --> Equipment
-    Manager --> Schedules
-
-    Login -.->|"<<include>>"| Credentials
-    RegisterPet -.->|"<<include>>"| VetContact
+    Authenticate -.->|"<<include>>"| Credentials
+    PetManagement -.->|"<<include>>"| RegisterPet
+    PetManagement -.->|"<<include>>"| MaintainPet
+    PetManagement -.->|"<<include>>"| VetContact
+    PetManagement -.->|"<<include>>"| MaintainAlerts
+    PetManagement -.->|"<<include>>"| ViewAlerts
+    PetManagement -.->|"<<include>>"| DailyStatus
+    ViewAlerts -.->|"<<include>>"| MedicalDetail
+    BookingManagement -.->|"<<include>>"| CreateBooking
+    BookingManagement -.->|"<<include>>"| MaintainBooking
     CreateBooking -.->|"<<include>>"| LinkPet
     CreateBooking -.->|"<<include>>"| Capacity
     MaintainBooking -.->|"<<include>>"| Capacity
     Capacity -.->|"<<extend: capacity exceeded>>"| OccupancyWarning
-    ViewAlerts -.->|"<<include>>"| MedicalDetail
 
     classDef actor fill:#17324d,stroke:#0b1f33,color:#ffffff,stroke-width:2px;
-    classDef usecase fill:#e7f2fb,stroke:#2b6f9f,color:#102a43,stroke-width:1.5px;
+    classDef summary fill:#cfe8f3,stroke:#2b6f9f,color:#102a43,stroke-width:1.5px;
+    classDef usecase fill:#e7f2fb,stroke:#6b9fc1,color:#102a43,stroke-width:1px;
     classDef validation fill:#fff1cc,stroke:#b7791f,color:#4a2c00,stroke-width:1.5px;
-    class Staff,PetOwner,Admin,Manager actor;
-    class Login,StaffAccounts,RegisterPet,MaintainPet,VetContact,MaintainAlerts,ViewAlerts,MedicalDetail,DailyStatus,CreateBooking,MaintainBooking,OccupancyWarning,OccupancyReport,Requests,Equipment,Schedules usecase;
-    class Credentials,LinkPet,Capacity validation;
+    class PetOwner,Staff,Admin,Manager actor;
+    class Authenticate,StaffManagement,PetManagement,BookingManagement,RequestManagement,EquipmentManagement,ScheduleManagement,OccupancyManagement summary;
+    class Credentials,RegisterPet,MaintainPet,VetContact,MaintainAlerts,ViewAlerts,MedicalDetail,DailyStatus,CreateBooking,MaintainBooking,OccupancyWarning usecase;
+    class LinkPet,Capacity validation;
 ```
+
 
 ### Combined use case summary
 

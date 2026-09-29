@@ -18,89 +18,74 @@ Admin --|> Staff
 Manager --|> Staff
 
 rectangle "Pet Records & Booking System (PRBS)" {
-  package "Accounts and authentication" {
-    usecase "Log in (FR1)" as UC_Login
+  usecase "Authenticate user (FR1)" as UC_Authenticate
+  usecase "Manage staff accounts (FR2)" as UC_StaffManagement
+  usecase "Manage pet records\nand alerts" as UC_PetManagement
+  usecase "Manage bookings\nand capacity" as UC_BookingManagement
+  usecase "Manage client\nservice requests" as UC_RequestManagement
+  usecase "Track equipment" as UC_EquipmentManagement
+  usecase "Manage technician\nschedules" as UC_ScheduleManagement
+  usecase "Generate occupancy\nreport (FR12)" as UC_OccupancyManagement
+
+  package "Authentication details" {
     usecase "Authenticate credentials" as UC_Credentials
-    usecase "Manage staff accounts (FR2)" as UC_StaffAccounts
   }
 
-  package "Pet records and alerts" {
+  package "Pet record details" {
     usecase "Register pet profile (FR3)" as UC_RegisterPet
     usecase "Maintain pet profile (FR4)" as UC_MaintainPet
-    usecase "Capture vet contact / emergency vet information (FR5)" as UC_VetContact
-    usecase "Maintain medical and dietary alerts" as UC_MaintainAlerts
+    usecase "Capture vet contact /\nemergency vet information (FR5)" as UC_VetContact
+    usecase "Maintain medical and\ndietary alerts" as UC_MaintainAlerts
     usecase "View medical alerts (FR10)" as UC_ViewAlerts
     usecase "Display medical detail" as UC_MedicalDetail
     usecase "Update daily status (FR11)" as UC_DailyStatus
   }
 
-  package "Bookings and capacity" {
+  package "Booking details" {
     usecase "Create booking (FR6)" as UC_CreateBooking
     usecase "Maintain booking (FR7)" as UC_MaintainBooking
-    usecase "Link booking to pet profile (FR8)" as UC_LinkPet
-    usecase "Check facility capacity (FR9)" as UC_Capacity
-    usecase "Display occupancy warning" as UC_OccupancyWarning
-    usecase "Generate occupancy report (FR12)" as UC_OccupancyReport
-  }
-
-  package "Operational management" {
-    usecase "Manage client service requests\n(create / view / update / assign / close)" as UC_Requests
-    usecase "Track equipment\n(register / update / allocate / return)" as UC_Equipment
-    usecase "Manage technician schedules\n(create / view / update / check availability)" as UC_Schedules
+    usecase "Link booking to\npet profile (FR8)" as UC_LinkPet
+    usecase "Check facility\ncapacity (FR9)" as UC_Capacity
+    usecase "Display occupancy\nwarning" as UC_OccupancyWarning
   }
 }
 
-Staff --> UC_Login
-Staff --> UC_StaffAccounts
-Staff --> UC_RegisterPet
-Staff --> UC_MaintainPet
-Staff --> UC_VetContact
-Staff --> UC_MaintainAlerts
-Staff --> UC_ViewAlerts
-Staff --> UC_DailyStatus
-Staff --> UC_CreateBooking
-Staff --> UC_MaintainBooking
-Staff --> UC_OccupancyReport
-Staff --> UC_Requests
-Staff --> UC_Equipment
-Staff --> UC_Schedules
+Staff --> UC_Authenticate
+Staff --> UC_PetManagement
+Staff --> UC_BookingManagement
+Staff --> UC_RequestManagement
+Staff --> UC_EquipmentManagement
+Staff --> UC_ScheduleManagement
+Staff --> UC_OccupancyManagement
 
-PetOwner --> UC_Login
-PetOwner --> UC_RegisterPet
-PetOwner --> UC_MaintainPet
-PetOwner --> UC_VetContact
-PetOwner --> UC_CreateBooking
-PetOwner --> UC_MaintainBooking
-PetOwner --> UC_ViewAlerts
-PetOwner --> UC_Requests
+PetOwner --> UC_Authenticate
+PetOwner --> UC_PetManagement
+PetOwner --> UC_BookingManagement
+PetOwner --> UC_RequestManagement
 
-Admin --> UC_Login
-Admin --> UC_StaffAccounts
-Admin --> UC_Equipment
-Admin --> UC_OccupancyReport
+Admin --> UC_StaffManagement
 
-Manager --> UC_Login
-Manager --> UC_ViewAlerts
-Manager --> UC_MaintainBooking
-Manager --> UC_OccupancyReport
-Manager --> UC_Requests
-Manager --> UC_Equipment
-Manager --> UC_Schedules
-
-UC_Login .> UC_Credentials : <<include>>
-UC_RegisterPet .> UC_VetContact : <<include>>
+UC_Authenticate .> UC_Credentials : <<include>>
+UC_PetManagement .> UC_RegisterPet : <<include>>
+UC_PetManagement .> UC_MaintainPet : <<include>>
+UC_PetManagement .> UC_VetContact : <<include>>
+UC_PetManagement .> UC_MaintainAlerts : <<include>>
+UC_PetManagement .> UC_ViewAlerts : <<include>>
+UC_PetManagement .> UC_DailyStatus : <<include>>
+UC_ViewAlerts .> UC_MedicalDetail : <<include>>
+UC_BookingManagement .> UC_CreateBooking : <<include>>
+UC_BookingManagement .> UC_MaintainBooking : <<include>>
 UC_CreateBooking .> UC_LinkPet : <<include>>
 UC_CreateBooking .> UC_Capacity : <<include>>
 UC_MaintainBooking .> UC_Capacity : <<include>>
 UC_Capacity .> UC_OccupancyWarning : <<extend: capacity exceeded>>
-UC_ViewAlerts .> UC_MedicalDetail : <<include>>
 
-note right of UC_Login
-Successful authentication is required
-before protected functions are used.
+note right of UC_Authenticate
+All protected functions require
+successful authentication.
 end note
 
-note bottom of UC_CreateBooking
+note bottom of UC_BookingManagement
 A booking is saved only when the pet
 exists and facility capacity is available.
 end note
