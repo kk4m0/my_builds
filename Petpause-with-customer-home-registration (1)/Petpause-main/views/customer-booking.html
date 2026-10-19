@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Book for your pet | PetPause</title><link rel="stylesheet" href="/static/style.css"></head>
+<body class="bare"><div class="login" style="max-width:650px"><a class="brand" href="/">🐾 <span>PetPause<small>Booking request</small></span></a><div class="card" style="margin-top:20px"><h1>Request a stay</h1><p class="muted">Use your customer account and tell us about your pet and preferred dates.</p><div id="message"></div>
+<form id="customerBookingForm"><h2>Your account</h2><div class="field"><label for="email">Email address *</label><input id="email" name="email" type="email" required autocomplete="email"></div>
+<div class="field"><label for="password">Password *</label><input id="password" name="password" type="password" required autocomplete="current-password"></div>
+<hr style="border:0;border-top:1px solid #d5dbe1;margin:22px 0"><h2>Your pet's details</h2>
+<div class="field"><label for="petName">Pet's name *</label><input id="petName" name="petName" required></div>
+<div class="field"><label for="breed">Breed *</label><input id="breed" name="breed" required></div>
+<div class="cols"><div class="field"><label for="startDate">Drop-off date *</label><input id="startDate" name="startDate" type="date" required></div><div class="field"><label for="endDate">Collection date *</label><input id="endDate" name="endDate" type="date" required></div></div>
+<div class="field"><label for="notes">Care notes (optional)</label><textarea id="notes" name="notes" rows="3" placeholder="Anything our team should know?"></textarea></div>
+<button class="btn pri" type="submit">Send booking request</button></form>
+<p class="help" style="margin-top:16px"><strong>Note:</strong> This submits a request, not an instant confirmed booking. PetPause staff will contact you to confirm availability.</p><p class="help"><a href="/">Back to home</a> · New customer? <a href="/register">Create an account</a></p></div></div>
+<script src="/static/js/customer-booking.js"></script></body></html>
